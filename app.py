@@ -1778,7 +1778,107 @@ st.write({
     "NH3": nh3
 })
 
+import plotly.graph_objects as go
+from plotly.subplots import make_subplots
 
+# ─────────────────────────────────────────────
+# TREND CHART (multi-metric)
+# ─────────────────────────────────────────────
+if os.path.exists("dataset.csv"):
+    df_hist = pd.read_csv("dataset.csv").tail(24)
+    df_hist["timestamp"] = pd.to_datetime(df_hist["timestamp"])
+    x_axis = df_hist["timestamp"].dt.strftime("%H:%M")
+else:
+    x_axis = list(range(24))
+    df_hist = None
+
+fig = make_subplots(specs=[[{"secondary_y": True}]])
+
+if df_hist is not None:
+    fig.add_trace(go.Scatter(x=x_axis, y=df_hist["aqi"],      name="AQI",      line=dict(color="#D85A30", width=2.5), fill="tozeroy", fillcolor="rgba(216,90,48,0.08)"), secondary_y=False)
+    fig.add_trace(go.Scatter(x=x_axis, y=df_hist["pm2_5"],    name="PM2.5",    line=dict(color="#1D9E75", width=2, dash="dash")), secondary_y=False)
+    fig.add_trace(go.Scatter(x=x_axis, y=df_hist["temp"],     name="Temp °C",  line=dict(color="#378ADD", width=2, dash="dot")),  secondary_y=True)
+    fig.add_trace(go.Scatter(x=x_axis, y=df_hist["humidity"], name="Humidity", line=dict(color="#7F77DD", width=1.5, dash="dashdot")), secondary_y=True)
+else:
+    # fallback simulated trend
+    import numpy as np
+    hrs = list(range(24))
+    fig.add_trace(go.Scatter(x=hrs, y=[max(0, aqi + np.random.randint(-30, 30)) for _ in hrs], name="AQI (simulated)", line=dict(color="#D85A30", width=2.5)), secondary_y=False)
+
+fig.update_layout(
+    height=320,
+    margin=dict(l=0, r=0, t=10, b=0),
+    legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="left", x=0),
+    plot_bgcolor="rgba(0,0,0,0)",
+    paper_bgcolor="rgba(0,0,0,0)",
+    hovermode="x unified",
+)
+fig.update_yaxes(title_text="AQI / PM2.5", secondary_y=False, gridcolor="rgba(128,128,128,0.15)")
+fig.update_yaxes(title_text="Temp / Humidity", secondary_y=True, gridcolor="rgba(128,128,128,0.08)")
+fig.update_xaxes(gridcolor="rgba(128,128,128,0.1)")
+
+st.plotly_chart(fig, use_container_width=True)
+
+# ─────────────────────────────────────────────
+# POLLUTANT BAR CHART
+# ─────────────────────────────────────────────
+st.subheader("☁ Pollutant Breakdown")
+
+pollutants = {
+    "PM2.5 (µg/m³)": pm25,
+    "PM10 (µg/m³)":  pm10,
+    "NO2 (ppb)":      no2,
+    "O3 (ppb)":       o3,
+    "SO2 (ppb)":      so2,
+    "NH3 (ppb)":      nh3,
+    "CO (ppb)":       co,
+}
+
+bar_colors = ["#D85A30","#D4820A","#639922","#1D9E75","#378ADD","#7F77DD","#C0392B"]
+
+fig2 = go.Figure(go.Bar(
+    x=list(pollutants.keys()),
+    y=list(pollutants.values()),
+    marker_color=bar_colors,
+    marker_line_width=0,
+))
+fig2.update_layout(
+    height=240,
+    margin=dict(l=0, r=0, t=10, b=0),
+    plot_bgcolor="rgba(0,0,0,0)",
+    paper_bgcolor="rgba(0,0,0,0)",
+    showlegend=False,
+)
+fig2.update_yaxes(gridcolor="rgba(128,128,128,0.15)")
+fig2.update_xaxes(gridcolor="rgba(0,0,0,0)")
+
+st.plotly_chart(fig2, use_container_width=True)
+
+# ─────────────────────────────────────────────
+# AQI GAUGE
+# ─────────────────────────────────────────────
+fig3 = go.Figure(go.Indicator(
+    mode="gauge+number",
+    value=aqi,
+    number={"font": {"size": 40}},
+    gauge={
+        "axis": {"range": [0, 500], "tickwidth": 1},
+        "bar":  {"color": color},
+        "steps": [
+            {"range": [0,   50],  "color": "#E8F5E9"},
+            {"range": [51,  100], "color": "#FFF9C4"},
+            {"range": [101, 150], "color": "#FFE0B2"},
+            {"range": [151, 200], "color": "#FFCDD2"},
+            {"range": [201, 300], "color": "#E1BEE7"},
+            {"range": [301, 500], "color": "#FFCDD2"},
+        ],
+        "threshold": {"line": {"color": "red", "width": 3}, "thickness": 0.75, "value": aqi},
+    },
+    title={"text": f"AQI — {label}", "font": {"size": 16}},
+))
+fig3.update_layout(height=280, margin=dict(l=20, r=20, t=40, b=10), paper_bgcolor="rgba(0,0,0,0)")
+
+st.plotly_chart(fig3, use_container_width=True)
 # ─────────────────────────────────────────────
 # DATASET
 # ─────────────────────────────────────────────
