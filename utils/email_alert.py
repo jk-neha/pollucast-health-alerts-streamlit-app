@@ -1,143 +1,101 @@
 import smtplib
-
-from email.mime.text import MIMEText
-from email.mime.multipart import MIMEMultipart
 import streamlit as st
-import smtplib
-import streamlit as st
-
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 
 def send_email_alert(aqi, level):
-
-    sender_email = st.secrets["EMAIL_USER"]
-
-    sender_password = st.secrets["EMAIL_PASS"]
-
-    receiver_email = "jknehavardhini2004@gmail.com"
-
-    subject = f"🌍 PolluCast AQI Alert - {level}"
-
-    # HTML EMAIL BODY
-    body = f"""
-    <html>
-    <body style="
-        background-color:#0D0D0D;
-        color:white;
-        font-family:Arial;
-        padding:30px;
-    ">
-
-        <div style="
-            max-width:600px;
-            margin:auto;
-            background:#161616;
-            border-radius:20px;
-            padding:30px;
-            border:1px solid #2A2A2A;
-        ">
-
-            <h1 style="
-                color:#00FFA3;
-                text-align:center;
-            ">
-                🌍 PolluCast Alert
-            </h1>
-
-            <hr style="border:1px solid #222;">
-
-            <h2>
-                AQI Level:
-                <span style="color:#00C2FF;">
-                    {aqi}
-                </span>
-            </h2>
-
-            <h2>
-                Condition:
-                <span style="color:#FFC857;">
-                    {level}
-                </span>
-            </h2>
-
-            <p style="
-                margin-top:25px;
-                font-size:16px;
-                line-height:1.7;
-                color:#CCCCCC;
-            ">
-                Please stay safe and avoid outdoor exposure
-                if the air quality becomes unhealthy.
-            </p>
-
-            <div style="
-                margin-top:30px;
-                padding:15px;
-                background:#101010;
-                border-radius:12px;
-                text-align:center;
-                color:#777;
-                font-size:13px;
-            ">
-                PolluCast • AI Powered Air Quality Monitoring
-            </div>
-
-        </div>
-
-    </body>
-    </html>
-    """
 
     try:
+        sender_email = st.secrets["EMAIL_USER"]
+        sender_password = st.secrets["EMAIL_PASS"]
 
-        # CREATE MESSAGE
-        msg = MIMEMultipart("alternative")
+        receiver_email = st.secrets.get(
+            "ALERT_EMAIL",
+            sender_email
+        )
 
+        subject = f"🌍 PolluCast AQI Alert - {level}"
+
+        body = f"""
+<html>
+<body style="margin:0;padding:0;background:#0b0f14;font-family:Arial">
+
+<div style="max-width:600px;margin:auto;padding:25px;">
+
+    <!-- CARD -->
+    <div style="
+        background:#111827;
+        border-radius:18px;
+        padding:25px;
+        box-shadow:0 10px 25px rgba(0,0,0,0.4);
+        border:1px solid #1f2937;
+    ">
+
+        <!-- HEADER -->
+        <h1 style="color:#00ffcc;text-align:center;margin-bottom:10px;">
+            🌍 PolluCast Alert
+        </h1>
+
+        <p style="text-align:center;color:#9ca3af;margin-top:0;">
+            Real-Time Air Quality Notification
+        </p>
+
+        <hr style="border:0;border-top:1px solid #222;margin:20px 0;">
+
+        <!-- AQI BOX -->
+        <div style="
+            text-align:center;
+            padding:20px;
+            background:#0f172a;
+            border-radius:12px;
+        ">
+            <h2 style="color:#ffffff;margin:0;">AQI Level</h2>
+            <p style="font-size:40px;margin:10px 0;color:#00d4ff;">
+                {aqi}
+            </p>
+            <p style="color:#fbbf24;font-size:18px;">
+                {level}
+            </p>
+        </div>
+
+        <!-- MESSAGE -->
+        <p style="color:#d1d5db;margin-top:20px;line-height:1.6;text-align:center;">
+            ⚠️ Air quality has reached a critical level.<br>
+            Please avoid outdoor activities and stay safe.
+        </p>
+
+        <!-- FOOTER -->
+        <div style="
+            margin-top:25px;
+            text-align:center;
+            font-size:12px;
+            color:#6b7280;
+        ">
+            PolluCast • AI-powered Air Quality Monitoring System
+        </div>
+
+    </div>
+
+</div>
+
+</body>
+</html>
+"""
+        msg = MIMEMultipart()
+        msg["From"] = sender_email
+        msg["To"] = receiver_email
         msg["Subject"] = subject
 
-        msg["From"] = sender_email
-
-        msg["To"] = receiver_email
-
-        # ATTACH HTML
         msg.attach(MIMEText(body, "html"))
 
-        # SMTP SERVER
         server = smtplib.SMTP("smtp.gmail.com", 587)
-
         server.starttls()
 
-        # LOGIN
-        server.login(
-            sender_email,
-            sender_password
-        )
-
-        # SEND EMAIL
-        server.sendmail(
-            sender_email,
-            receiver_email,
-            msg.as_string()
-        )
-
+        server.login(sender_email, sender_password)
+        server.sendmail(sender_email, receiver_email, msg.as_string())
         server.quit()
 
-        print("EMAIL SENT SUCCESSFULLY ✅")
+        print("EMAIL SENT ✅")
 
     except Exception as e:
-
-        print("EMAIL ERROR ❌")
-
-        print(e)
-
-
-import streamlit as st
-
-def send_email_alert(aqi, level):
-    if "EMAIL_USER" not in st.secrets or "EMAIL_PASS" not in st.secrets:
-        print("Email secrets not configured. Skipping alert.")
-        return
-
-    sender_email = st.secrets["EMAIL_USER"]
-    sender_password = st.secrets["EMAIL_PASS"]
+        print("EMAIL FAILED ❌", e)

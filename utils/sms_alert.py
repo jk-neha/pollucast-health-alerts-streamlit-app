@@ -8,8 +8,15 @@ def send_sms_alert(aqi, level):
             st.secrets["TWILIO_AUTH_TOKEN"]
         )
 
-        message = f"🚨 PolluCast AQI ALERT!\nAQI: {aqi}\nLevel: {level}"
+        message = f"""
+🌍 PolluCast Alert
 
+🚨 AQI: {aqi}
+⚠️ Level: {level}
+
+💡 Stay indoors if possible
+🫁 Protect your health
+"""
         client.messages.create(
             body=message,
             from_=st.secrets["TWILIO_SMS_NUMBER"],
