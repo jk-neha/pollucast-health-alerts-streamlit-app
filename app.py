@@ -1700,7 +1700,13 @@ save_live_data(pm25, pm10, co, no2, o3, so2, nh3, temp, hum, aqi)
 # ─────────────────────────────────────────────
 if "last_alert" not in st.session_state:
     st.session_state.last_alert = datetime.min
+if "sms_sent" not in st.session_state:
+    st.session_state.sms_sent = False
 
+if aqi >= 100 and not st.session_state.sms_sent:
+    send_email_alert(aqi, label)
+    send_sms_alert(aqi, label)
+    st.session_state.sms_sent = True
 if aqi >= 100:
     if (datetime.now() - st.session_state.last_alert).seconds > 1800:
         send_email_alert(aqi, label)

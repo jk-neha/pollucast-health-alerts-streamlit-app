@@ -2,16 +2,21 @@ from twilio.rest import Client
 import streamlit as st
 
 def send_sms_alert(aqi, level):
-    account_sid = st.secrets["TWILIO_ACCOUNT_SID"]
-    auth_token = st.secrets["TWILIO_AUTH_TOKEN"]
-    twilio_number = st.secrets["TWILIO_SMS_NUMBER"]
+    try:
+        client = Client(
+            st.secrets["TWILIO_ACCOUNT_SID"],
+            st.secrets["TWILIO_AUTH_TOKEN"]
+        )
 
-    client = Client(account_sid, auth_token)
+        message = f"🚨 PolluCast AQI ALERT!\nAQI: {aqi}\nLevel: {level}"
 
-    message = f"🚨 AQI ALERT!\nAQI: {aqi}\nLevel: {level}\nPolluCast Health Warning!"
+        client.messages.create(
+            body=message,
+            from_=st.secrets["TWILIO_SMS_NUMBER"],
+            to=st.secrets["MY_PHONE_NUMBER"]
+        )
 
-    client.messages.create(
-        body=message,
-        from_=twilio_number,
-        to="+918122978440"   # 👈 replace with your phone number
-    )
+        print("SMS sent successfully!")
+
+    except Exception as e:
+        print("SMS failed:", e)
