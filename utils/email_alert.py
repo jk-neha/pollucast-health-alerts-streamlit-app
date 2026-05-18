@@ -130,3 +130,14 @@ def send_email_alert(aqi, level):
         print("EMAIL ERROR ❌")
 
         print(e)
+
+
+import streamlit as st
+
+def send_email_alert(aqi, level):
+    if "EMAIL_USER" not in st.secrets or "EMAIL_PASS" not in st.secrets:
+        print("Email secrets not configured. Skipping alert.")
+        return
+
+    sender_email = st.secrets["EMAIL_USER"]
+    sender_password = st.secrets["EMAIL_PASS"]

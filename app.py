@@ -1744,7 +1744,7 @@ trend = [max(0, min(500, aqi + np.random.randint(-30, 30))) for _ in hours]
 
 fig = go.Figure()
 fig.add_trace(go.Scatter(x=hours, y=trend, mode="lines", line=dict(color=color)))
-st.plotly_chart(fig, use_container_width=True)
+st.plotly_chart(fig, width="stretch")
 
 
 # ─────────────────────────────────────────────
