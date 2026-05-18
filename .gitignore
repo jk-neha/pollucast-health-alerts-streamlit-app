@@ -1,9 +1,2 @@
 __pycache__/
 *.pyc
-.env
-dataset.csv
-model.pkl
-venv/
-.DS_Store
-.streamlit/secrets.toml
-*.env
