@@ -898,7 +898,44 @@ html, body, [class*="css"] {
 </style>
 """, unsafe_allow_html=True)
 
+st.markdown(f"""
+<div style="
+display:flex;
+justify-content:space-between;
+align-items:center;
+padding:10px 16px;
+background:#FFFFFF;
+border:1px solid #E5E3DC;
+border-radius:12px;
+margin-bottom:18px;
+">
 
+<div style="font-family:'DM Mono',monospace;font-size:10px;color:#A8A49C;">
+🟢 SYSTEM ONLINE · LIVE SENSOR STREAM
+</div>
+
+<div style="font-family:'DM Mono',monospace;font-size:10px;color:#A8A49C;">
+LAST UPDATED · {datetime.now().strftime('%H:%M:%S')}
+</div>
+
+<div style="font-family:'DM Mono',monospace;font-size:10px;color:#A8A49C;">
+REFRESH · 60s AUTO
+</div>
+
+</div>
+""", unsafe_allow_html=True)
+
+st.markdown("""
+<div style="
+font-family:'DM Mono',monospace;
+font-size:10px;
+color:#A8A49C;
+letter-spacing:0.12em;
+margin-bottom:10px;
+">
+🔬 AI MODEL · RANDOM FOREST · REAL-TIME PREDICTION ENGINE
+</div>
+""", unsafe_allow_html=True)
 # ─────────────────────────────────────────────
 #  CONSTANTS & HELPERS
 # ─────────────────────────────────────────────
@@ -1137,13 +1174,38 @@ with head_l:
 
 with head_r:
     st.markdown(f"""
-    <div style="text-align:right; padding-top:4px;">
-      <div style="font-family:'DM Mono',monospace; font-size:9px;
-                  color:#A8A49C; letter-spacing:0.1em; margin-bottom:2px;">PREDICTED AQI</div>
-      <div style="font-family:'DM Sans',sans-serif; font-size:44px; font-weight:600;
-                  color:{fg}; letter-spacing:-0.04em; line-height:1;">{aqi}</div>
-      <div style="font-family:'DM Mono',monospace; font-size:10px;
-                  color:{fg}; letter-spacing:0.1em; margin-top:2px;">{label.upper()}</div>
+    <div style="
+    text-align:right;
+    padding:10px 14px;
+    background:#FFFFFF;
+    border:1px solid #E5E3DC;
+    border-radius:14px;
+    ">
+
+    <div style="font-family:'DM Mono',monospace;font-size:9px;color:#A8A49C;">
+    LIVE AQI INDEX
+    </div>
+
+    <div style="
+    font-family:'DM Sans',sans-serif;
+    font-size:52px;
+    font-weight:600;
+    color:{fg};
+    line-height:1;
+    margin-top:4px;
+    ">
+    {aqi}
+    </div>
+
+    <div style="
+    font-family:'DM Mono',monospace;
+    font-size:10px;
+    color:{fg};
+    letter-spacing:0.1em;
+    ">
+    {label.upper()}
+    </div>
+
     </div>
     """, unsafe_allow_html=True)
 
@@ -1175,7 +1237,7 @@ st.markdown(f"""
 #  METRIC ROW
 # ─────────────────────────────────────────────
 section_label("Live environmental metrics")
-m1, m2, m3, m4, m5 = st.columns(5)
+m1, m2, m3, m4, m5 = st.columns([1.2,1.2,1.2,1.2,1.2], gap="large")
 
 with m1: st.metric("🌫  AQI Index",   str(aqi))
 with m2: st.metric("📊  Category",    label)
@@ -1183,7 +1245,14 @@ with m3: st.metric("🌡  Temperature", f"{temp:.1f} °C")
 with m4: st.metric("💧  Humidity",    f"{hum:.0f}%")
 with m5: st.metric("☁  PM2.5",       f"{pm25:.0f} µg/m³")
 
-
+def divider():
+    st.markdown("""
+    <div style="
+    height:1px;
+    background:linear-gradient(90deg, transparent, #E5E3DC, transparent);
+    margin:20px 0;
+    "></div>
+    """, unsafe_allow_html=True)
 # ─────────────────────────────────────────────
 #  GAUGE + TREND
 # ─────────────────────────────────────────────
@@ -1309,7 +1378,9 @@ for col, (name, val, mx, clr, unit) in zip(poll_cols, POLLS):
     with col:
         st.markdown(f"""
         <div style="background:#FFFFFF; border:1px solid #E5E3DC;
-                    border-top:2px solid {clr}; border-radius:14px; padding:14px 12px;">
+                    # border-top:2px solid {clr}; border-radius:14px; padding:14px 12px;">
+                    box-shadow:0 6px 18px rgba(0,0,0,0.04);
+border-top:3px solid {clr};
           <div style="font-family:'DM Mono',monospace; font-size:9px; color:#A8A49C;
                       text-transform:uppercase; letter-spacing:0.1em; margin-bottom:8px;">{name}</div>
           <div style="font-family:'DM Sans',sans-serif; font-size:22px; font-weight:600;
