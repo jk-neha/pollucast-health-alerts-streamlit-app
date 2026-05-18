@@ -1524,7 +1524,7 @@ from streamlit_autorefresh import st_autorefresh
 
 from utils.api import get_live_aqi, get_weather_data
 from utils.email_alert import send_email_alert
-
+from utils.sms_alert import send_sms_alert
 
 # ─────────────────────────────────────────────
 # PAGE CONFIG
@@ -1704,6 +1704,7 @@ if "last_alert" not in st.session_state:
 if aqi >= 100:
     if (datetime.now() - st.session_state.last_alert).seconds > 1800:
         send_email_alert(aqi, label)
+        send_sms_alert(aqi, label)
         st.session_state.last_alert = datetime.now()
 
 
