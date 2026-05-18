@@ -2054,7 +2054,7 @@ with chart_col1:
         title={"text": f"<b>{label}</b>", "font": {"size": 18}},
     ))
     gauge_fig.update_layout(height=300, margin=dict(t=40, b=10, l=20, r=20))
-    st.plotly_chart(gauge_fig, use_container_width=True)
+    st.plotly_chart(gauge_fig, width="stretch")
 
 with chart_col2:
     st.subheader("☁️ Pollutant Levels")
@@ -2092,7 +2092,7 @@ with chart_col2:
         xaxis=dict(showgrid=False),
         yaxis=dict(showgrid=True, gridcolor="#E5E5E5"),
     )
-    st.plotly_chart(bar_fig, use_container_width=True)
+    st.plotly_chart(bar_fig, width="stretch")
 
 
 # ─────────────────────────────────────────────
@@ -2105,12 +2105,15 @@ trend_col1, trend_col2 = st.columns(2)
 
 # Load CSV history
 history_df = None
-if os.path.exists("dataset.csv"):
+if os.path.exists("dataset.csv") and os.path.getsize("dataset.csv") > 0:
     try:
         history_df = pd.read_csv("dataset.csv")
-        history_df["timestamp"] = pd.to_datetime(history_df["timestamp"])
-        history_df = history_df.tail(30)
-    except:
+        if not history_df.empty and "timestamp" in history_df.columns:
+            history_df["timestamp"] = pd.to_datetime(history_df["timestamp"])
+            history_df = history_df.tail(30)
+        else:
+            history_df = None
+    except Exception:
         history_df = None
 
 with trend_col1:
@@ -2144,7 +2147,7 @@ with trend_col1:
             plot_bgcolor="rgba(0,0,0,0)",
             paper_bgcolor="rgba(0,0,0,0)",
         )
-        st.plotly_chart(aqi_fig, use_container_width=True)
+        st.plotly_chart(aqi_fig, width="stretch")
     else:
         # Fallback: simulated trend (original behaviour)
         hours = list(range(24))
@@ -2154,7 +2157,7 @@ with trend_col1:
         fig.update_layout(height=280, margin=dict(t=10, b=20, l=10, r=10),
                           xaxis_title="Hour", yaxis_title="AQI (simulated)",
                           plot_bgcolor="rgba(0,0,0,0)", paper_bgcolor="rgba(0,0,0,0)")
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig, width="stretch")
         st.caption("ℹ️ Showing simulated trend — more data will appear after a few refresh cycles.")
 
 with trend_col2:
@@ -2190,7 +2193,7 @@ with trend_col2:
             plot_bgcolor="rgba(0,0,0,0)",
             paper_bgcolor="rgba(0,0,0,0)",
         )
-        st.plotly_chart(th_fig, use_container_width=True)
+        st.plotly_chart(th_fig, width="stretch")
     else:
         st.info("Temperature & humidity history will appear after a few refresh cycles.")
 
@@ -2236,7 +2239,7 @@ if history_df is not None and len(history_df) > 1:
         plot_bgcolor="rgba(0,0,0,0)",
         paper_bgcolor="rgba(0,0,0,0)",
     )
-    st.plotly_chart(pm_fig, use_container_width=True)
+    st.plotly_chart(pm_fig, width="stretch")
 
 st.markdown("---")
 
