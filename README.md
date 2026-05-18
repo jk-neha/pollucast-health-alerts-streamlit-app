@@ -49,7 +49,7 @@
 ## 🖥️ Results & Screenshots
 
 ### 📊 Live Dashboard — AQI Metrics & Health Status
-![PolluCast Dashboard](results/pollucast_ui.png)
+![PolluCast Dashboard](results/pollucast_dashboard.png)
 
 ### 📧 Email Alert — HTML Formatted Notification
 ![Email Alert](results/email_alerts.png)
